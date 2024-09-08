@@ -1,6 +1,7 @@
 import { AnimatedValue } from "./animated"
 import { clear_canvas } from "./canvas"
 import { draw_all_orbits, draw_planets } from "./planet"
+import { is_mobile } from "./utils"
 
 /**
  * Scale for drawing
@@ -57,3 +58,7 @@ function draw() {
 }
 
 draw()
+
+if (is_mobile()) {
+	window.alert("You need a keyboard to control this application.")
+}
