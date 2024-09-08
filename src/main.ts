@@ -1,15 +1,21 @@
+import { AnimatedValue } from "./animated"
 import { clear_canvas } from "./canvas"
 import { draw_all_orbits, draw_planets } from "./planet"
 
 /**
  * Scale for drawing
  */
-let scale = 0.000001
+const scale = new AnimatedValue(0.000001)
 
 /**
- * Offset for drawing
+ * x Offset for drawing
  */
-const offset = { x: 0, y: 0 }
+const offset_x = new AnimatedValue(0)
+
+/**
+ * y Offset for drawing
+ */
+const offset_y = new AnimatedValue(0)
 
 /**
  * Speed for planets to move
@@ -17,35 +23,21 @@ const offset = { x: 0, y: 0 }
 const speed = 10
 
 /**
- * Increases the scale for drawing
- */
-function increase_scale() {
-	scale *= 1.1
-}
-
-/**
- * Decreases the scale for drawing
- */
-function decrease_scale() {
-	scale /= 1.1
-}
-
-/**
  * Handles key presses
  */
 document.addEventListener("keydown", (event) => {
 	if (event.key === "+") {
-		increase_scale()
+		scale.animate_to(scale.value * 1.5)
 	} else if (event.key === "-") {
-		decrease_scale()
+		scale.animate_to(scale.value / 1.5)
 	} else if (event.key === "ArrowUp") {
-		offset.y += 40
+		offset_y.animate_to(offset_y.value + 120)
 	} else if (event.key === "ArrowDown") {
-		offset.y -= 40
+		offset_y.animate_to(offset_y.value - 120)
 	} else if (event.key === "ArrowLeft") {
-		offset.x += 40
+		offset_x.animate_to(offset_x.value + 120)
 	} else if (event.key === "ArrowRight") {
-		offset.x -= 40
+		offset_x.animate_to(offset_x.value - 120)
 	}
 })
 
@@ -54,9 +46,13 @@ document.addEventListener("keydown", (event) => {
  */
 function draw() {
 	clear_canvas()
-	draw_all_orbits(offset, scale)
+	scale.update()
+	offset_x.update()
+	offset_y.update()
+	const offset_value = { x: offset_x.value, y: offset_y.value }
+	draw_all_orbits(offset_value, scale.value)
 	const time = performance.now() / 1000
-	draw_planets(speed * time, offset, scale)
+	draw_planets(speed * time, offset_value, scale.value)
 	requestAnimationFrame(draw)
 }
 
